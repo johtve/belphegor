@@ -1,29 +1,55 @@
-
 // ==UserScript==
-// @name         Belhpegor - Devilry improved
+// @name         Belphegor - Devilry improved
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  Make IFI's Devilry less confusing by adding more colours that aren't green.
 // @author       Johann Dahmen Tveranger
-// @match        https://devilry.ifi.uio.no/
+// @match        https://devilry.ifi.uio.no/*
 // @grant        none
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
-    // Add your custom styles here
-    const customStyles = `
-        body {
-            background-color: #f0f0f0 !important;
-        }
+    console.log("Belphegor enabled");
 
-        h1 {
-            color: red !important;
+    // Starting with some static CSS to lay groundwork
+    const styleElement = document.createElement('style');
+    const cssBaseRules = `
+        /* Sub-div of the main assignment boxes. Where background color is originally set, reset it to easily let the parent decide color */
+        ol.cradmin-legacy-listbuilder-list li .cradmin-legacy-listbuilder-itemvalue.cradmin-legacy-listbuilder-itemvalue-focusbox
+        {
+            background-color: transparent !important;
         }
     `;
-
-    const styleElement = document.createElement('style');
-    styleElement.textContent = customStyles;
+    styleElement.textContent = cssBaseRules;
     document.head.appendChild(styleElement);
+
+
+    // Colours to be used for re-colouring, based on the status of the assignment
+    // Keys are the assosciated class for each status
+    const statusColors = {
+        '.devilry-core-groupstatus-waiting-for-deliveries': '#d9f00e',
+        '.devilry-core-groupstatus-waiting-for-feedback': '#3dff61',
+	    '.devilry-core-grade-passed': '#01911c' 
+
+    }
+
+
+
+    // HTML collection of all assignment box elements (<a> tags)
+    const assignmentCollection = document.getElementsByClassName('cradmin-legacy-listbuilder-itemframe');
+    console.log(assignmentCollection);
+
+    for (let i = 0; i < assignmentCollection.length; i++) {
+        const assignment = assignmentCollection[i];
+
+        console.log("Assignment: " + assignment);
+        for (let assignmentStatus in statusColors) {
+            if (assignment.querySelector(assignmentStatus) !== null) {
+                // Must use bracket notation because statusColors keys start with a period
+                assignment.style.setProperty('background-color', statusColors[assignmentStatus], 'important');
+            }
+        }
+    }
 })();
