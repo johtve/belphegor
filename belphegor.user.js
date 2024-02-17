@@ -2,9 +2,10 @@
 // @name         Belphegor - Devilry improved
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Make IFI's Devilry less confusing by adding more colours that aren't green.
+// @description  Make IFI's Devilry a little less confusing by adding more colour coding.
 // @author       Johann Dahmen Tveranger
 // @match        https://devilry.ifi.uio.no/*
+// @exclude	 https://devilry.ifi.uio.no/
 // @grant        none
 // ==/UserScript==
 
