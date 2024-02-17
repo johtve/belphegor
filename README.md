@@ -9,3 +9,10 @@ Belphegor adds custom color coding for Devilry assignments based on their status
 - Handed in, waiting for feedback - light green
 - Passed - dark green
 - Failed - red (not yet implemented)
+
+
+# Installation
+
+1. Install the Tampermonkey extension for your browser (make sure to enable it if it isn't already)
+2. Click the **"Raw"** button on the github page of the main JS file
+3. Click "Install" and Tampermoneky should handle the rest
