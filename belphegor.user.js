@@ -31,7 +31,7 @@
     // Keys are the assosciated class for each status
     const statusColors = {
         '.devilry-core-groupstatus-waiting-for-deliveries': '#d9f00e',
-        '.devilry-core-groupstatus-waiting-for-feedback': '#3dff61',
+        '.devilry-core-groupstatus-waiting-for-feedback': '#51f516',
 	    '.devilry-core-grade-passed': '#01911c' 
 
     }
