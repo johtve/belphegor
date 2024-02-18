@@ -1,7 +1,7 @@
 # belphegor
 Browser userscript aiming to make UiO IFI's Devilry less visually confusing.
 
-
+The name derives from the chief demon of sloth, a sin all programmers are guilty of in some form.
 
 # Features
 Belphegor adds custom color coding for Devilry assignments based on their status:
