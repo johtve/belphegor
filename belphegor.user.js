@@ -9,34 +9,78 @@
 // @grant        none
 // ==/UserScript==
 
-(function () {
-  "use strict";
+(function() {
+	"use strict";
 
-  console.log("Belphegor enabled");
+	console.log("Belphegor enabled");
 
-  const colorCodes = {
-    "yellow": "#d9f00e",
-    "lightgreen": "#51f516",
-    "darkgreen": "#01911c",
-  };
 
-  // Colours to be used for re-colouring, based on the status of the assignment
-  // Keys are the assosciated class for each status
-  const statusColors = {
-    ".devilry-core-groupstatus-waiting-for-deliveries": colorCodes.yellow,
-    ".devilry-core-groupstatus-waiting-for-feedback": colorCodes.lightgreen,
-    ".devilry-core-grade-passed": colorCodes.darkgreen,
-  };
 
-  /** Returns true if the given HTML element contains an element with the given selector, otherwise false */
-  function elementHasSelector(element, selector) {
-    return (element.querySelector(selector) !== null);
-  }
 
-  // Applies some base css to the entire page to lay groundwork
-  function setBaseCss() {
-    const styleElement = document.createElement("style");
-    const cssBaseRules = `
+	/** Returns true if the given HTML element contains an element with the given selector, otherwise false */
+	function elementHasSelector(element, selector) {
+		return (element.querySelector(selector) !== null);
+	}
+
+	/** Returns true if all function evaluate to true for the given object, else false */
+	function checkAllConditions(obj, conditionList) {
+		for (const conditionFunc of conditionList) {
+			if (conditionFunc(obj) === false) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+
+
+
+	const colorCodes = {
+		"yellow": "#d9f00e",
+		"lightGreen": "#51f516",
+		"darkGreen": "#01911c",
+		"red": "#b30707",
+	};
+
+
+	// Statuses for assignments. Conditions is list of arrow functions which all need to return true for the assignment object in order for it to qualify
+	// as that satus. Color is the colour code associated with that status.
+	const assignmentStatuses = {
+		"waitingForDeliveries": {
+			"conditions": [
+				(obj) => elementHasSelector(obj, ".devilry-core-groupstatus-waiting-for-deliveries"),
+			],
+			"color": colorCodes.yellow,
+		},
+		"waitingForFeedback": {
+			"conditions": [
+				(obj) => elementHasSelector(obj, ".devilry-core-groupstatus-waiting-for-feedback"),
+			],
+			"color": colorCodes.lightGreen,
+		},
+		"passed": {
+			"conditions": [
+				(obj) => elementHasSelector(obj, ".devilry-core-grade-passed"),
+			],
+			"color": colorCodes.darkGreen,
+		},
+		"failed": {
+			"conditions": [
+				(obj) => elementHasSelector(obj, ".devily-core-grade-failed"),
+			],
+			"color": colorCodes.red
+		}
+	};
+
+
+
+
+
+	// Applies some base css to the entire page to lay groundwork
+	function setBaseCss() {
+		const styleElement = document.createElement("style");
+		const cssBaseRules = `
 	       
 	       /* Sub-div of the main assignment boxes. Where background color is originally set, reset it to easily let the parent decide color */
 		ol.cradmin-legacy-listbuilder-list li .cradmin-legacy-listbuilder-itemvalue.cradmin-legacy-listbuilder-itemvalue-focusbox
@@ -45,40 +89,42 @@
 		}
 		
 		`;
-    styleElement.textContent = cssBaseRules;
-    document.head.appendChild(styleElement);
-  }
+		styleElement.textContent = cssBaseRules;
+		document.head.appendChild(styleElement);
+	}
 
-  // Returns all assignment elements on the page as an HTML collection
-  function getAssignments() {
-    // HTML collection of all assignment box elements (<a> tags)
-    const assignmentCollection = document.getElementsByClassName(
-      "cradmin-legacy-listbuilder-itemframe",
-    );
-    // console.log(assignmentCollection);
-    return assignmentCollection;
-  }
+	// Returns all assignment elements on the page as an HTML collection
+	function getAssignments() {
+		// HTML collection of all assignment box elements (<a> tags)
+		const assignmentCollection = document.getElementsByClassName("cradmin-legacy-listbuilder-itemframe");
+		// console.log(assignmentCollection);
+		return assignmentCollection;
+	}
 
-  // Recolours all given assignment elements (takes HTML collection)
-  function recolorAssignments(assignments) {
-    for (let i = 0; i < assignments.length; i++) {
-      const assignment = assignments[i];
+	// Recolours all given assignment elements (takes HTML collection)
+	function recolorAssignments(assignments) {
+		for (let i = 0; i < assignments.length; i++) {
+			const assignment = assignments[i];
 
-      // console.log("Assignment: " + assignment);
-      for (const assignmentStatus in statusColors) {
-        if (elementHasSelector(assignment, assignmentStatus)) {
-          // Must use bracket notation because statusColors keys start with a period
-          assignment.style.setProperty(
-            "background-color",
-            statusColors[assignmentStatus],
-            "important",
-          );
-        }
-      }
-    }
-  }
+			// console.log("Assignment: " + assignment);
+			for (const assignmentStatus in assignmentStatuses) {
+				// console.log(assignmentStatus);
+				if (checkAllConditions(assignment, assignmentStatuses[assignmentStatus]["conditions"])) {
+					// console.log("THING GOT COLOURED WOOOO");
+					assignment.style.setProperty(
+						"background-color",
+						assignmentStatuses[assignmentStatus]["color"],
+						"important",
+					);
+				}
+			}
+		}
+	}
 
-  setBaseCss();
-  const assignments = getAssignments();
-  recolorAssignments(assignments);
+	setBaseCss();
+	const assignments = getAssignments();
+	recolorAssignments(assignments);
+
+
+
 })();
