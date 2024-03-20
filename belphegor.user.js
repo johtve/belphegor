@@ -26,9 +26,11 @@
 	function checkAllConditions(obj, conditionList) {
 		for (const conditionFunc of conditionList) {
 			if (conditionFunc(obj) === false) {
+				console.log("Condition failed: " + conditionFunc.toString());
 				return false;
 			}
 		}
+		console.log("All conditions passed" + conditionList.toString() + " for object: " + obj);
 		return true;
 	}
 
@@ -37,6 +39,7 @@
 
 
 	const colorCodes = {
+		"orange": "#fa7202",
 		"yellow": "#d9f00e",
 		"lightGreen": "#51f516",
 		"darkGreen": "#01911c",
@@ -47,6 +50,17 @@
 	// Statuses for assignments. Conditions is list of arrow functions which all need to return true for the assignment object in order for it to qualify
 	// as that satus. Color is the colour code associated with that status.
 	const assignmentStatuses = {
+		"waitingForDeliveries_NoFilesDelivered": {
+			"conditions": [
+				(obj) => elementHasSelector(obj, ".devilry-core-groupstatus-waiting-for-deliveries"),
+				(obj) => {
+					console.log(obj.querySelector(".devilry-core-comment-summary-studentfiles").textContent);
+					obj.querySelector(".devilry-core-comment-summary-studentfiles").textContent.includes("0")
+				},
+			],
+			"color": colorCodes.orange,
+		},
+
 		"waitingForDeliveries": {
 			"conditions": [
 				(obj) => elementHasSelector(obj, ".devilry-core-groupstatus-waiting-for-deliveries"),
@@ -85,7 +99,17 @@
 	       /* Sub-div of the main assignment boxes. Where background color is originally set, reset it to easily let the parent decide color */
 		ol.cradmin-legacy-listbuilder-list li .cradmin-legacy-listbuilder-itemvalue.cradmin-legacy-listbuilder-itemvalue-focusbox
 		{
-		    background-color: transparent !important;
+			background-color: transparent !important;
+		}
+		/*Make assignment name, "grade passed" text, and comment summary have black text*/
+		.devilry-body-student 
+		a.cradmin-legacy-listbuilder-itemframe-link 
+		.cradmin-legacy-listbuilder-itemvalue.cradmin-legacy-listbuilder-itemvalue-focusbox.cradmin-legacy-listbuilder-itemvalue-titledescription
+		.cradmin-legacy-listbuilder-itemvalue-titledescription-title,
+		.devilry-cradmin-groupitemvalue .devilry-cradmin-groupitemvalue-grade .devilry-core-grade-passed,
+ol.cradmin-legacy-listbuilder-list p:last-child, ol.cradmin-legacy-listbuilder-list pre:last-child, ol.cradmin-legacy-listbuilder-list table:last-child, ol.cradmin-legacy-listbuilder-list form:last-child, ol.cradmin-legacy-listbuilder-list h2:last-child, ol.cradmin-legacy-listbuilder-list h3:last-child
+		{
+			color: black !important;
 		}
 		
 		`;
@@ -101,29 +125,33 @@
 		return assignmentCollection;
 	}
 
+
+	function reColorAssignment(assignment) {
+		for (const assignmentStatus in assignmentStatuses) {
+			// console.log(assignmentStatus);
+			if (checkAllConditions(assignment, assignmentStatuses[assignmentStatus]["conditions"])) {
+				// console.log("THING GOT COLOURED WOOOO");
+				assignment.style.setProperty(
+					"background-color",
+					assignmentStatuses[assignmentStatus]["color"],
+					"important",
+				);
+				return;
+			}
+		}
+	}
+
 	// Recolours all given assignment elements (takes HTML collection)
-	function recolorAssignments(assignments) {
+	function recolorAllAssignments(assignments) {
 		for (let i = 0; i < assignments.length; i++) {
 			const assignment = assignments[i];
-
-			// console.log("Assignment: " + assignment);
-			for (const assignmentStatus in assignmentStatuses) {
-				// console.log(assignmentStatus);
-				if (checkAllConditions(assignment, assignmentStatuses[assignmentStatus]["conditions"])) {
-					// console.log("THING GOT COLOURED WOOOO");
-					assignment.style.setProperty(
-						"background-color",
-						assignmentStatuses[assignmentStatus]["color"],
-						"important",
-					);
-				}
-			}
+			reColorAssignment(assignment);
 		}
 	}
 
 	setBaseCss();
 	const assignments = getAssignments();
-	recolorAssignments(assignments);
+	recolorAllAssignments(assignments);
 
 
 
