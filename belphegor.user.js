@@ -116,8 +116,12 @@ ol.cradmin-legacy-listbuilder-list p:last-child, ol.cradmin-legacy-listbuilder-l
 
 		const menu = document.createElement("div");
 		menu.setAttribute("id", "belphegorMenu");
-		menu.textContent = "Color legend";
 		menu.style.cssText = "visibility: hidden; background-color: white; border: 2px solid black; width 15em; font-size: medium; font-weight: bold; position: absolute; z-index: 100;";
+		const colorLegendHeader = document.createElement("span");
+		colorLegendHeader.textContent = "Color legend";
+		colorLegendHeader.style.cssText = "font-size: 1.2em; font-weight: bold; margin: 0.5em;";
+		menu.appendChild(colorLegendHeader);
+
 		for (const assignmentStatus in assignmentStatuses) {
 			const statusDiv = document.createElement("div");
 			statusDiv.setAttribute("class", "belphegorMenuStatusDiv");
