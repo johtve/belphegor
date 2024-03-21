@@ -5,7 +5,8 @@ The name derives from the chief demon of sloth, a sin all programmers are guilty
 
 # Features
 Belphegor adds custom color coding for Devilry assignments based on their status:
-- Waiting for deliveries - yellow
+- Waiting for deliveries (no files submitted) - orange
+- Waiting for deliveries (files submitted) - yellow
 - Handed in, waiting for feedback - light green
 - Passed - dark green
 - Failed - red
